@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #import "PDFFormSignatureField.h"
+#import "PDF.h"
 
 @implementation PDFFormSignatureField
 
@@ -31,9 +32,21 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.1];
+
+        [self initializeControls];
     }
     return self;
 }
 
+-(void)initializeControls {
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showSignatureView:)];
+    [self addGestureRecognizer:tap];
+}
 
-@end
+-(void)showSignatureView:(UITapGestureRecognizer *)tap {
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center postNotificationName:@"showSignatureView" object:self];
+}
+
+
+end
