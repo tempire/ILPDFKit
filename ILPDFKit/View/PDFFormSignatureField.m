@@ -31,7 +31,7 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.1];
+        self.backgroundColor = PDFWidgetColor;
 
         [self initializeControls];
     }
