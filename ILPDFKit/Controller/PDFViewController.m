@@ -42,7 +42,9 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    _pdfView.alpha = 0;
+    [UIView animateWithDuration:0.15 animations:^{
+        _pdfView.alpha = 0;
+    }];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -93,7 +95,11 @@
     CGPoint margins = [self getMargins];
     NSArray *additionViews = [_document.forms createWidgetAnnotationViewsForSuperviewWithWidth:self.view.bounds.size.width margin:margins.x hMargin:margins.y];
     _pdfView = [[PDFView alloc] initWithFrame:self.view.bounds dataOrPath:pass additionViews:additionViews];
+    _pdfView.alpha = 0;
     [self.view addSubview:_pdfView];
+    [UIView animateWithDuration:0.35 animations:^{
+        _pdfView.alpha = 1;
+    }];
 }
 
 - (CGPoint)getMargins {
