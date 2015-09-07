@@ -42,16 +42,14 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [UIView animateWithDuration:0.15 animations:^{
-        _pdfView.alpha = 0;
-    }];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     for (PDFForm *form in self.document.forms) {
         [form removeObservers];
     }
-    [_pdfView removeFromSuperview];self.pdfView = nil;
+    [_pdfView removeFromSuperview];
+    self.pdfView = nil;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self loadPDFView];
 }
 
