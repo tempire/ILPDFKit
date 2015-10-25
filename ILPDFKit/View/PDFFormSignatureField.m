@@ -53,7 +53,10 @@
         [view removeFromSuperview];
     }
     
-    if (!value) return;
+    if (!value) {
+        self.backgroundColor = PDFWidgetColor;
+        return;
+    }
     
     NSData *data = [[NSData alloc] initWithBase64EncodedString:value options:nil];
     UIImage *image = [UIImage imageWithData:data];
