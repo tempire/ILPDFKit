@@ -41,16 +41,18 @@
     return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    for (PDFForm *form in self.document.forms) {
-        [form removeObservers];
-    }
-    [_pdfView removeFromSuperview];
-    self.pdfView = nil;
-}
+//- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+//    for (PDFForm *form in self.document.forms) {
+//        [form removeObservers];
+//    }
+//    [_pdfView removeFromSuperview];
+//    self.pdfView = nil;
+//}
+//
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self loadPDFView];
+  [self reload];
+  //  [self loadPDFView];
 }
 
 #pragma mark - PDFViewController
