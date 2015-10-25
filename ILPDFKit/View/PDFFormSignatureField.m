@@ -25,13 +25,6 @@
 
 @implementation PDFFormSignatureField
 
-#pragma mark - NSObject
-
-- (void)dealloc {
-      [[NSNotificationCenter defaultCenter]
-            removeObserver:self];
-}
-
 #pragma mark - UIView
 
 // This class is incomplete. Signature fields are not implemented currently. We mark them red.
@@ -39,7 +32,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = PDFWidgetColor;
-
+        
         [self initializeControls];
     }
     return self;
@@ -53,6 +46,32 @@
 -(void)showSignatureView:(UITapGestureRecognizer *)tap {
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center postNotificationName:@"showSignatureView" object:self];
+}
+
+-(void)setValue:(NSString *)value {
+    for (UIView *view in self.subviews) {
+        [view removeFromSuperview];
+    }
+    
+    if (!value) return;
+    
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:value options:nil];
+    UIImage *image = [UIImage imageWithData:data];
+    
+    UIImageView *imageView = [[UIImageView alloc] init]; //WithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+    [imageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.image = image;
+    
+    [self addSubview:imageView];
+    [self addConstraints:@[
+                           [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+                           [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0],
+                           [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0],
+                           [NSLayoutConstraint constraintWithItem:imageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0]
+                           ]];
+    
+    [self layoutIfNeeded];
 }
 
 @end
