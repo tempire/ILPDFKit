@@ -25,6 +25,13 @@
 
 @implementation PDFFormSignatureField
 
+#pragma mark - NSObject
+
+- (void)dealloc {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
 #pragma mark - UIView
 
 // This class is incomplete. Signature fields are not implemented currently. We mark them red.
