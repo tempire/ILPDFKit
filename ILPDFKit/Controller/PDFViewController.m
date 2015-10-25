@@ -51,7 +51,7 @@
 //
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self loadPDFView];
+//    [self loadPDFView];
 }
 
 #pragma mark - PDFViewController
@@ -82,9 +82,9 @@
 
 - (void)reload {
     [_document refresh];
-    //[_pdfView removeFromSuperview];
-    //_pdfView = nil;
-    //[self loadPDFView];
+    [_pdfView removeFromSuperview];
+    _pdfView = nil;
+    [self loadPDFView];
 }
 
 #pragma mark - Private
