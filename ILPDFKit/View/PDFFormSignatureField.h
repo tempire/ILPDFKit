@@ -27,6 +27,6 @@
 /** The PDFFormSignatureField represents a view for a PDF signature field. Not currently implemented.
  */
 @interface PDFFormSignatureField : PDFWidgetAnnotationView
-@property (retain, nonatomic) UIImageView *imageView;
+@property (retain, nonatomic) UIImage *signatureImage;
 +(CGSize)scaledSizeWithAspect:(CGFloat)aspect boundingSize:(CGSize)size;
 @end
