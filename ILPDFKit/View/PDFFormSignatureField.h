@@ -28,5 +28,5 @@
  */
 @interface PDFFormSignatureField : PDFWidgetAnnotationView
 @property (retain, nonatomic) UIImage *signatureImage;
-+(CGSize)scaledSizeWithAspect:(CGFloat)aspect boundingSize:(CGSize)size;
++(void)drawWithRect:(CGRect)frame context:(CGContextRef)ctx value:(NSString *)value;
 @end
