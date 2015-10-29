@@ -269,9 +269,10 @@
     CGFloat hmargin = ((maxPageWidth-width)/2)*((viewWidth-(2*xmargin))/maxPageWidth)+xmargin;
     CGFloat height = _cropBox.size.height;
     
+    //correctedFrame applies to the widgit, not the full PDF window
     CGRect correctedFrame = CGRectMake(_frame.origin.x-_cropBox.origin.x, height-_frame.origin.y-_frame.size.height-_cropBox.origin.y, _frame.size.width, _frame.size.height);
     
-    CGFloat realWidth = viewWidth-2*hmargin;
+    CGFloat realWidth = viewWidth - (2*hmargin);
     CGFloat factor = realWidth/width;
     CGFloat pageOffset = 0;
     
@@ -282,8 +283,9 @@
         CGFloat iheight = [pg cropBox].size.height;
         CGFloat irealWidth = viewWidth- (2 * ihmargin);
         CGFloat ifactor = irealWidth/iwidth;
-        pageOffset+= (iheight * ifactor) + (ymargin * ifactor);
-        //DPNote: ymargin is just a constant in the PDFViewController.getMargins.  They are hard coded margins.  But it also needs to be multiplied by the ifactor which represents the pdf/screen ratio.  This prevents the controls from gradually sliding out of place.
+        
+        pageOffset+= (iheight * ifactor) + ymargin;
+        //DPNote: ymargin is just a constant in the PDFViewController.getMargins.  They are hard coded margins.  I have now hardcoded margins for different devices so they end up in the right place.
     }
     
     _pageFrame =  CGRectIntegral(CGRectMake(correctedFrame.origin.x*factor+hmargin, correctedFrame.origin.y*factor+ymargin, correctedFrame.size.width*factor, correctedFrame.size.height*factor));
@@ -335,6 +337,7 @@
         [self addObserver:_formUIElement forKeyPath:@"options" options:NSKeyValueObservingOptionNew context:NULL];
     }
       return _formUIElement;
+
 }
 
 

@@ -102,22 +102,48 @@
 
 - (CGPoint)getMargins {
     
-    static const float PDFLandscapePadWMargin = 13.0f;
-    static const float PDFLandscapePadHMargin = 7.25f;
-    static const float PDFPortraitPadWMargin = 9.0f;
-    static const float PDFPortraitPadHMargin = 6.10f;
-    static const float PDFPortraitPhoneWMargin = 3.5f;
-    static const float PDFPortraitPhoneHMargin = 6.7f;
-    static const float PDFLandscapePhoneWMargin = 6.8f;
-    static const float PDFLandscapePhoneHMargin = 6.5f;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))return CGPointMake(PDFPortraitPadWMargin,PDFPortraitPadHMargin);
-        else return CGPointMake(PDFLandscapePadWMargin,PDFLandscapePadHMargin);
-    } else {
-        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))return CGPointMake(PDFPortraitPhoneWMargin,PDFPortraitPhoneHMargin);
-        else return CGPointMake(PDFLandscapePhoneWMargin,PDFLandscapePhoneHMargin);
+  //    static const float PDFLandscapePadWMargin = 13.0f;
+//    static const float PDFLandscapePadHMargin = 7.25f;
+//    static const float PDFPortraitPadWMargin = 9.0f;
+//    static const float PDFPortraitPadHMargin = 6.10f;
+//    static const float PDFPortraitPhoneWMargin = 3.5f;
+//    static const float PDFPortraitPhoneHMargin = 6.7f;
+//    static const float PDFLandscapePhoneWMargin = 6.8f;
+//    static const float PDFLandscapePhoneHMargin = 6.5f;
+
+    // DPNote: I played with the idea of doing full device detection here.  I'm hoping that this "lighter" version will work just fine.  The problem I need to solve is figuring out which kind of device it is so the margins can be more exact for each device.
+
+    // DPNote: I know it's bad to hard code these numbers...but it makes it more clear what is actually going on and what the exact numbers
+    // are for each device.  So I'm sacrificing rules for clarity.
+
+    CGSize result = [[UIScreen mainScreen] bounds].size;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))
+            return CGPointMake(9.0f,6.10f);
+        else
+            return CGPointMake(13.0f,7.25f);
     }
+    else
+    {
+        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))
+        {
+            if(result.height == 480)         return CGPointMake(3.5f, 6.7f); // 3.5 inch display - iPhone 4S and below
+            else if (result.height == 568)   return CGPointMake(3.5f, 6.7f); // 4 inch display - iPhone 5
+            else if (result.height == 667)   return CGPointMake(3.5f, 4.0f); // 4.7 inch display - iphone 6
+            else if (result.height == 736)   return CGPointMake(3.5f, 3.3f); // 5.5 inch display - iphone 6P
+            else                             return CGPointMake(3.5f, 6.7f);
+        }
+        else    // Landscape orientation
+        {
+            if(result.width == 480)         return CGPointMake(6.8f, 6.5f); // 3.5 inch display - iPhone 4S and below
+            else if(result.width == 568)    return CGPointMake(6.8f, 6.5f); // 4 inch display - iPhone 5
+            else if(result.width == 667)    return CGPointMake(6.8f, 3.8f); // 4.7 inch display - iphone 6
+            else if(result.width == 736)    return CGPointMake(6.8f, 1.5f); // 5.5 inch display - iPhone 6P
+            else                            return CGPointMake(6.8f, 6.5f); // Undetected, return previous default
+        }
+    }
+
 }
 
 @end
