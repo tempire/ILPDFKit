@@ -94,6 +94,10 @@
 -(void)setValue:(NSString *)value {
     if (value == nil) {
         [self setSignatureImage:nil];
+    }
+    
+    if (!value) {
+        self.backgroundColor = PDFWidgetColor;
         return;
     }
     
@@ -108,7 +112,6 @@
 
 +(void)drawWithRect:(CGRect)frame context:(CGContextRef)ctx value:(NSString *)value {
     if (value == nil) return;
-    
     NSData *data = [[NSData alloc] initWithBase64EncodedString:value options:nil];
     UIImage *image = [UIImage imageWithData:data];
     

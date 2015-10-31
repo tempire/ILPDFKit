@@ -252,14 +252,14 @@
     }
 }
 
-- (PDFWidgetAnnotationView *)createWidgetAnnotationViewForSuperviewWithWidth:(CGFloat)vwidth xMargin:(CGFloat)xmargin yMargin:(CGFloat)ymargin {
+- (PDFWidgetAnnotationView *)createWidgetAnnotationViewForSuperviewWithWidth:(CGFloat)viewWidth xMargin:(CGFloat)xmargin yMargin:(CGFloat)ymargin {
     if ((_annotFlags & PDFAnnotationFlagHidden) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagInvisible) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagNoView) > 0) return nil;
     CGFloat width = _cropBox.size.width;
-    CGFloat maxWidth = width;
+    CGFloat maxPageWidth = width;
     for (PDFPage *pg in self.parent.document.pages) {
-        if([pg cropBox].size.width > maxWidth) maxWidth = [pg cropBox].size.width;
+        if([pg cropBox].size.width > maxPageWidth) maxPageWidth = [pg cropBox].size.width;
     }
     /*
      vwidth-2*xmargin = pixel width of canvas on screen for full screen scaled page
@@ -268,26 +268,42 @@
      ((vwidth-2*xmargin)/maxWidth) = converstion factor from canvas space to device space.
      Thus hmargin is the horizonal pixel margin from the border of the screen to the beginning of the page canvas.
      */
-    CGFloat hmargin = ((maxWidth-width)/2)*((vwidth-2*xmargin)/maxWidth)+xmargin;
+    CGFloat hmargin = ((maxPageWidth-width)/2)*((viewWidth-(2*xmargin))/maxPageWidth)+xmargin;
     CGFloat height = _cropBox.size.height;
+    
+    //correctedFrame applies to the widgit, not the full PDF window
     CGRect correctedFrame = CGRectMake(_frame.origin.x-_cropBox.origin.x, height-_frame.origin.y-_frame.size.height-_cropBox.origin.y, _frame.size.width, _frame.size.height);
-    CGFloat realWidth = vwidth-2*hmargin;
+    
+    CGFloat realWidth = viewWidth - (2*hmargin);
     CGFloat factor = realWidth/width;
     CGFloat pageOffset = 0;
+    
     for (NSUInteger c = 0; c < self.page-1; c++) {
         PDFPage *pg = self.parent.document.pages[c];
         CGFloat iwidth = [pg cropBox].size.width;
-        CGFloat ihmargin = ((maxWidth-iwidth)/2)*((vwidth-2*xmargin)/maxWidth)+xmargin;
+        CGFloat ihmargin = ((maxPageWidth-iwidth)/2)*((viewWidth- (2 * xmargin))/maxPageWidth)+xmargin;
         CGFloat iheight = [pg cropBox].size.height;
-        CGFloat irealWidth = vwidth-2*ihmargin;
+        CGFloat irealWidth = viewWidth- (2 * ihmargin);
         CGFloat ifactor = irealWidth/iwidth;
-        pageOffset+= iheight*ifactor+ymargin;
+        
+        pageOffset+= (iheight * ifactor) + ymargin;
+        //DPNote: ymargin is just a constant in the PDFViewController.getMargins.  They are hard coded margins.  I have now hardcoded margins for different devices so they end up in the right place.
     }
+    
     _pageFrame =  CGRectIntegral(CGRectMake(correctedFrame.origin.x*factor+hmargin, correctedFrame.origin.y*factor+ymargin, correctedFrame.size.width*factor, correctedFrame.size.height*factor));
+    
     if (_formUIElement) {
         _formUIElement = nil;
     }
+    
+    //A full rendered PDF is really a single "window" or "view".  So we have to manually add offsets and
+    // build each UI element as if it was in a single window.
+    // _pageFrame represents the frame/rectangle for the current widget
+    // _uiBaseFrame represents where a widgit should be located in this larger window.
+    // pageOffset represents what needs to be added on the Y axis for this pages origins to be placed properly
+    
     _uiBaseFrame = CGRectIntegral(CGRectMake(_pageFrame.origin.x, _pageFrame.origin.y+pageOffset, _pageFrame.size.width, _pageFrame.size.height));
+    
     switch (_formType) {
         case PDFFormTypeText:
             _formUIElement = [[PDFFormTextField alloc] initWithFrame:_uiBaseFrame multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0) alignment:_textAlignment secureEntry:((_flags & PDFFormFlagTextFieldPassword) > 0) readOnly:((_flags & PDFFormFlagReadOnly) > 0)];
@@ -315,13 +331,15 @@
         default:
             break;
     }
+    
     if (_formUIElement) {
         [_formUIElement setValue:self.value];
         _formUIElement.delegate = self;
         [self addObserver:_formUIElement forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:NULL];
         [self addObserver:_formUIElement forKeyPath:@"options" options:NSKeyValueObservingOptionNew context:NULL];
     }
-    return _formUIElement;
+      return _formUIElement;
+
 }
 
 
