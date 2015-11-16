@@ -182,6 +182,11 @@ typedef NS_ENUM(NSUInteger, PDFFormType) {
  */
 @property (nonatomic, strong, readonly) NSString *setAppearanceStream;
 
+/** The DA attribute for Annotation fields.  Can be used to customize the text appearance to match
+    the PDF
+ */
+@property (nonatomic, strong, readonly) NSString *textDisplayAttribute;
+
 
 /**
  The field dictionary that defines the form

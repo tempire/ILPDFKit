@@ -68,6 +68,9 @@
         NSNumber *formTextAlignment = [leaf  inheritableValueForKey:@"Q"];
         _exportValue = [self getExportValueFrom:leaf];
         _setAppearanceStream = [self getSetAppearanceStreamFromLeaf:leaf];
+        
+        _textDisplayAttribute = [self getTextFontValueFrom:leaf];
+        
         PDFArray *arr = [leaf inheritableValueForKey:@"Opt"];
         NSMutableArray *temp = [NSMutableArray array];
         for (id obj in arr) {
@@ -247,12 +250,11 @@
         UIGraphicsPopContext();
     } else if (self.formType == PDFFormTypeButton) {
         [PDFFormButtonField drawWithRect:rect context:ctx back:NO selected:[self.value isEqualToString:self.exportValue] && (_flags & PDFFormFlagButtonPushButton) == 0 radio:(_flags & PDFFormFlagButtonRadio) > 0];
-    } else if (self.formType == PDFFormTypeSignature) {
-        [PDFFormSignatureField drawWithRect:rect context:ctx value:self.value];
     }
 }
 
 - (PDFWidgetAnnotationView *)createWidgetAnnotationViewForSuperviewWithWidth:(CGFloat)viewWidth xMargin:(CGFloat)xmargin yMargin:(CGFloat)ymargin {
+    
     if ((_annotFlags & PDFAnnotationFlagHidden) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagInvisible) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagNoView) > 0) return nil;
@@ -306,7 +308,7 @@
     
     switch (_formType) {
         case PDFFormTypeText:
-            _formUIElement = [[PDFFormTextField alloc] initWithFrame:_uiBaseFrame multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0) alignment:_textAlignment secureEntry:((_flags & PDFFormFlagTextFieldPassword) > 0) readOnly:((_flags & PDFFormFlagReadOnly) > 0)];
+            _formUIElement = [[PDFFormTextField alloc] initWithFrame:_uiBaseFrame multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0) alignment:_textAlignment appearance:_textDisplayAttribute secureEntry:((_flags & PDFFormFlagTextFieldPassword) > 0) readOnly:((_flags & PDFFormFlagReadOnly) > 0)];
         break;
         case PDFFormTypeButton: {
             BOOL radio = ((_flags & PDFFormFlagButtonRadio) > 0);
@@ -339,7 +341,6 @@
         [self addObserver:_formUIElement forKeyPath:@"options" options:NSKeyValueObservingOptionNew context:NULL];
     }
       return _formUIElement;
-
 }
 
 
@@ -411,6 +412,20 @@
         if ([as isKindOfClass:NSString.class]) as = [as textString];
         return as;
     }
+    return nil;
+}
+
+//Returns the font for a field defined by the DA attribute in the PDF stream
+-(NSString *)getTextFontValueFrom:(PDFDictionary *)leaf {
+    
+    // DA is an NSInlineData object which can be decoded as a UTF8 string
+    id da = leaf[@"DA"];
+
+    if(da != nil)
+    {
+        return [[NSString alloc] initWithData:da encoding:NSUTF8StringEncoding];
+    }
+    
     return nil;
 }
 
