@@ -448,7 +448,7 @@
 }
 
 - (void)removeHighlight {
-    _formUIElement.layer.backgroundColor = PDFWidgetColor;
+    _formUIElement.backgroundColor = PDFWidgetColor;
 }
 
 @end
