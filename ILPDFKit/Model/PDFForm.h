@@ -249,6 +249,19 @@ typedef NS_ENUM(NSUInteger, PDFFormType) {
 
 - (void)removeObservers;
 
+/**---------------------------------------------------------------------------------------
+ * @name Styling
+ *  ---------------------------------------------------------------------------------------
+ */
+
+/** Highlights the view
+ */
+- (void)highlight;
+
+/** Removes highlight on the view
+ */
+- (void)removeHighlight;
+
 @end
 
 

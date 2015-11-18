@@ -440,6 +440,17 @@
     }
 }
 
+
+#pragma mark - Styling
+
+- (void)highlight {
+    _formUIElement.backgroundColor = [UIColor colorWithRed:1.00 green:0.81 blue:0.38 alpha:1.0];
+}
+
+- (void)removeHighlight {
+    _formUIElement.layer.backgroundColor = PDFWidgetColor;
+}
+
 @end
 
 
