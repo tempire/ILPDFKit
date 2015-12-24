@@ -113,9 +113,11 @@
 
 #pragma mark - UIScrollViewDelegate
 
+// This gets called on view rotation as well.
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     CGFloat scale = scrollView.zoomScale;
-    if (scale < 1.0f) scale = 1.0f;
+    // if (scale < 1.0f) scale = 1.0f; // This is what caused the transition from landscape to portrait to not work.  When going from landscape to portrait the zoomscale is less than 1.0 (it's .75).
+    // So don't do this.
     for (PDFWidgetAnnotationView *element in _pdfWidgetAnnotationViews) {
         [element updateWithZoom:scale];
     }

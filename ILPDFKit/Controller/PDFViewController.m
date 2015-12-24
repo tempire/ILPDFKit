@@ -59,7 +59,6 @@
 {
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context)
      {
-         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
          // DPNote: do nothing for now.  But I'd like to have the loadPDFView occur here
          // I'm hoping this will fix the "flash" that occurs currently when the orientation happens by reloading before
          // the view is displayed.  But this requires fixing the code underneath this because currently it gets it's location
@@ -67,7 +66,6 @@
          
      } completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
      {
-         [self loadPDFView:size];
      }];
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
