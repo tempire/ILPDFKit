@@ -23,6 +23,10 @@
 #import "PDF.h"
 #import "PDFFormContainer.h"
 
+// Simple macro to get the device orientation before the orientation change
+// has actually been made.  So you can't use [UIDevice] yet.
+#define UIOrientationIsPortrait(size) size.height > size.width
+
 @interface PDFViewController(Private)
 - (void)loadPDFView;
 - (CGPoint)margins;
@@ -34,7 +38,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self loadPDFView];
+    [self loadPDFView:[[UIScreen mainScreen] bounds].size];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -50,8 +54,21 @@
 //}
 //
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-//    [self loadPDFView];
+
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context)
+     {
+         // DPNote: do nothing for now.  But I'd like to have the loadPDFView occur here
+         // I'm hoping this will fix the "flash" that occurs currently when the orientation happens by reloading before
+         // the view is displayed.  But this requires fixing the code underneath this because currently it gets it's location
+         // from the device current view (pre rotation).
+         
+     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context)
+     {
+     }];
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 #pragma mark - PDFViewController
@@ -89,9 +106,9 @@
 
 #pragma mark - Private
 
-- (void)loadPDFView {
+- (void)loadPDFView:(CGSize)size {
     id pass = (_document.documentPath ? _document.documentPath:_document.documentData);
-    CGPoint margins = [self getMargins];
+    CGPoint margins = [self getMargins:size];
     NSArray *additionViews = [_document.forms createWidgetAnnotationViewsForSuperviewWithWidth:self.view.bounds.size.width margin:margins.x hMargin:margins.y];
     _pdfView = [[PDFView alloc] initWithFrame:self.view.bounds dataOrPath:pass additionViews:additionViews];
     _pdfView.alpha = 0;
@@ -101,7 +118,7 @@
     }];
 }
 
-- (CGPoint)getMargins {
+- (CGPoint)getMargins:(CGSize)size {
     
   //    static const float PDFLandscapePadWMargin = 13.0f;
 //    static const float PDFLandscapePadHMargin = 7.25f;
@@ -120,14 +137,14 @@
     CGSize result = [[UIScreen mainScreen] bounds].size;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
-        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))
+        if (UIOrientationIsPortrait(size))
             return CGPointMake(9.0f,6.10f);
         else
             return CGPointMake(13.0f,7.25f);
     }
     else
     {
-        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation))
+        if (UIOrientationIsPortrait(size))
         {
             if(result.height == 480)         return CGPointMake(3.5f, 6.7f); // 3.5 inch display - iPhone 4S and below
             else if (result.height == 568)   return CGPointMake(3.5f, 6.7f); // 4 inch display - iPhone 5
