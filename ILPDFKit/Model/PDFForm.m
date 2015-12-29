@@ -250,6 +250,8 @@
         UIGraphicsPopContext();
     } else if (self.formType == PDFFormTypeButton) {
         [PDFFormButtonField drawWithRect:rect context:ctx back:NO selected:[self.value isEqualToString:self.exportValue] && (_flags & PDFFormFlagButtonPushButton) == 0 radio:(_flags & PDFFormFlagButtonRadio) > 0];
+    } else if (self.formType == PDFFormTypeSignature) {
+        [PDFFormSignatureField drawWithRect:rect context:ctx value:self.value];
     }
 }
 
