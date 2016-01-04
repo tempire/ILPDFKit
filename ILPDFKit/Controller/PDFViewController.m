@@ -135,32 +135,39 @@
     // are for each device.  So I'm sacrificing rules for clarity.
 
     CGSize result = [[UIScreen mainScreen] bounds].size;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-    {
-        if (UIOrientationIsPortrait(size))
-            return CGPointMake(9.0f,6.10f);
-        else
-            return CGPointMake(13.0f,7.25f);
-    }
-    else
-    {
-        if (UIOrientationIsPortrait(size))
-        {
-            if(result.height == 480)         return CGPointMake(3.5f, 6.7f); // 3.5 inch display - iPhone 4S and below
-            else if (result.height == 568)   return CGPointMake(3.5f, 6.7f); // 4 inch display - iPhone 5
-            else if (result.height == 667)   return CGPointMake(3.5f, 4.0f); // 4.7 inch display - iphone 6
-            else if (result.height == 736)   return CGPointMake(3.5f, 3.3f); // 5.5 inch display - iphone 6P
-            else                             return CGPointMake(3.5f, 6.7f);
-        }
-        else    // Landscape orientation
-        {
-            if(result.width == 480)         return CGPointMake(6.8f, 6.5f); // 3.5 inch display - iPhone 4S and below
-            else if(result.width == 568)    return CGPointMake(6.8f, 6.5f); // 4 inch display - iPhone 5
-            else if(result.width == 667)    return CGPointMake(6.8f, 3.8f); // 4.7 inch display - iphone 6
-            else if(result.width == 736)    return CGPointMake(6.8f, 1.5f); // 5.5 inch display - iPhone 6P
-            else                            return CGPointMake(6.8f, 6.5f); // Undetected, return previous default
-        }
-    }
+      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+      {
+          if (UIOrientationIsPortrait(size))
+          {
+              if(result.height == 1366) return CGPointMake(9.0f,-2.8f); // IPad Pro
+              else                      return CGPointMake(9.0f,6.10f); // All other IPads
+          }
+          else
+          {
+              if(result.width == 1366) return CGPointMake(9.0f, -13.6f); // IPad Pro
+              else                     return CGPointMake(13.0f,7.25f); // All other IPads
+          }
+      }
+      else
+      {
+          if (UIOrientationIsPortrait(size))
+          {
+              if(result.height == 480)         return CGPointMake(3.5f, 6.7f); // 3.5 inch display - iPhone 4S and below
+              else if (result.height == 568)   return CGPointMake(3.5f, 6.7f); // 4 inch display - iPhone 5
+              else if (result.height == 667)   return CGPointMake(3.5f, 4.0f); // 4.7 inch display - iphone 6
+              else if (result.height == 736)   return CGPointMake(3.5f, 3.3f); // 5.5 inch display - iphone 6P
+              else                             return CGPointMake(3.5f, 6.7f);
+          }
+          else    // Landscape orientation
+          {
+              if(result.width == 480)         return CGPointMake(6.8f, 6.5f); // 3.5 inch display - iPhone 4S and below
+              else if(result.width == 568)    return CGPointMake(6.8f, 6.5f); // 4 inch display - iPhone 5
+              else if(result.width == 667)    return CGPointMake(6.8f, 3.8f); // 4.7 inch display - iphone 6
+              else if(result.width == 736)    return CGPointMake(6.8f, 1.5f); // 5.5 inch display - iPhone 6P
+              else                            return CGPointMake(6.8f, 6.5f); // Undetected, return previous default
+          }
+      }
+ 
 
 }
 
