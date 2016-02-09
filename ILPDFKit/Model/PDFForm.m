@@ -341,6 +341,9 @@
         _formUIElement.delegate = self;
         [self addObserver:_formUIElement forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:NULL];
         [self addObserver:_formUIElement forKeyPath:@"options" options:NSKeyValueObservingOptionNew context:NULL];
+        
+        _formUIElement.name = self.name;
+        _formUIElement.displayName = self.uname;
     }
       return _formUIElement;
 }

@@ -114,5 +114,10 @@
     }
     return ret;
 }
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"\nPage Number: %d \nRotation Angle: %i\nCropWidth = %f\nCropHeight = %f\nCropX = %f\nCropY = %f",
+            self.pageNumber, self.rotationAngle, self.cropBox.size.width, self.cropBox.size.height, self.cropBox.origin.x, self.cropBox.origin.y];
+}
 
 @end

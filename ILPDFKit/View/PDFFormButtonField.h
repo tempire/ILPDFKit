@@ -40,10 +40,6 @@
  */
 @property (nonatomic) BOOL pushButton;
 
-/** The name of the button if a push button.
- */
-@property (nonatomic, strong) NSString *name;
-
 /** The export value for the button's on state.
  @discussion
  For a simple two button field to choose 'Female' of 'Male' for example, 
