@@ -231,9 +231,9 @@
     NSRange isBold = [fontModifier rangeOfString:@"bold" options:NSCaseInsensitiveSearch];
     NSRange isItalic = [fontModifier rangeOfString:@"italic" options:NSCaseInsensitiveSearch];
     
-    if(isBold.location != NSNotFound)
+    if(isBold.location != nil && isBold.location != NSNotFound)
         return [UIFont fontWithDescriptor:boldDescriptor size:size];
-    else if(isItalic.location != NSNotFound)
+    else if(isItalic.location != nil && isItalic.location != NSNotFound)
         return [UIFont fontWithDescriptor:italicDescriptor size:size];
     else
         return [UIFont fontWithDescriptor:baseDescriptor size:size];
