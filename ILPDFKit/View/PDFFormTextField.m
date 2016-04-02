@@ -78,7 +78,7 @@
         _textFieldOrTextView.opaque = NO;
         _textFieldOrTextView.backgroundColor = [UIColor clearColor];
         
-        UIFont *displayFont = [self getFontFromDisplayAttribute:appearanceInfo];
+        UIFont *displayFont = [PDFForm getFontFromDisplayAttribute:appearanceInfo];
         
         // In PDF, a font added with size of 0 means "use the system font".  So if the font comes back nil or the size is 0, we don't use the display font.
         if(displayFont != nil && displayFont.pointSize > 0.0)
@@ -163,8 +163,6 @@
 }
 
 #pragma mark - UITextFieldDelegate
-
-
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
     if ([newString length] <= [textField.text length]) return YES;
@@ -185,57 +183,5 @@
 
 - (void)resign {
     [_textFieldOrTextView resignFirstResponder];
-}
-
-#pragma mark - Private Methods
-- (UIFont *)getFontFromDisplayAttribute:(NSString *)attributeInfo
-{
-    UIFont *returnFont = nil;
-    
-    if(attributeInfo == nil)
-        return nil;
-    
-    NSArray *parts = [attributeInfo componentsSeparatedByString:@" "];
-    if(parts.count > 2)
-    {
-        NSString *fontNameAndFamily = [parts[0] substringFromIndex:1];
-        CGFloat fontSize = [parts[1] floatValue];
-        
-        returnFont = [self getFontForFamily:fontNameAndFamily size:fontSize];
-    }
-    return returnFont; // Could be nil
-}
-
--(UIFont *)getFontForFamily:(NSString *)font size:(CGFloat)size
-{
-    //Note: Currently this only handles either Bold Or Italic.  It also only handles fairly
-    // standard fontFamily styles.  It would need extending to go beyond this.
-    
-    UIFontDescriptor * baseDescriptor = nil;
-    NSString *fontFamily = nil;
-    NSString *fontModifier = nil;
-    
-    NSArray *parts = [font componentsSeparatedByString:@","];
-    if(parts.count == 2) {
-        fontFamily = parts[0];
-        fontModifier = parts[1];
-    }
-    else{
-        fontFamily = font;
-    }
-    baseDescriptor = [UIFontDescriptor fontDescriptorWithName:fontFamily size:size];
-    
-    UIFontDescriptor *boldDescriptor = [baseDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    UIFontDescriptor *italicDescriptor = [baseDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
-    
-    NSRange isBold = [fontModifier rangeOfString:@"bold" options:NSCaseInsensitiveSearch];
-    NSRange isItalic = [fontModifier rangeOfString:@"italic" options:NSCaseInsensitiveSearch];
-    
-    if(isBold.location != nil && isBold.location != NSNotFound)
-        return [UIFont fontWithDescriptor:boldDescriptor size:size];
-    else if(isItalic.location != nil && isItalic.location != NSNotFound)
-        return [UIFont fontWithDescriptor:italicDescriptor size:size];
-    else
-        return [UIFont fontWithDescriptor:baseDescriptor size:size];
 }
 @end

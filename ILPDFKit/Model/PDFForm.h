@@ -262,6 +262,16 @@ typedef NS_ENUM(NSUInteger, PDFFormType) {
  */
 - (void)removeHighlight;
 
+/** Parses the attributeInfo to return a UIFont * with the font information from the PDF.
+ Note: Can return nil if font was not found
+ */
++ (UIFont *)getFontFromDisplayAttribute:(NSString *)attributeInfo;
+
+/** Parses the font family (first part) of the font attribute
+ */
++ (UIFont *)getFontForFamily:(NSString *)font size:(CGFloat)size;
+
+
 @end
 
 

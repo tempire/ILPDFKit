@@ -46,5 +46,4 @@
  */
 - (instancetype)initWithFrame:(CGRect)frame multiline:(BOOL)multiline alignment:(NSTextAlignment)alignment appearance:(NSString *)appearanceInfo secureEntry:(BOOL)secureEntry readOnly:(BOOL)ro NS_DESIGNATED_INITIALIZER;
 
-
 @end
