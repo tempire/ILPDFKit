@@ -83,7 +83,10 @@
         // In PDF, a font added with size of 0 means "use the system font".  So if the font comes back nil or the size is 0, we don't use the display font.
         if(displayFont != nil && displayFont.pointSize > 0.0)
         {
-             [_textFieldOrTextView performSelector:@selector(setFont:) withObject:displayFont];
+            _baseFontSize = displayFont.pointSize;
+            _currentFontSize = _baseFontSize;
+            
+            [_textFieldOrTextView performSelector:@selector(setFont:) withObject:displayFont];
         }
         else
         {
