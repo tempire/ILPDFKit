@@ -90,6 +90,29 @@
 - (void)resign {
 }
 
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated completion:(void(^)(BOOL finished))completion {
+    [self setHighlighted:highlighted animated:animated duration:0.3 completion:completion];
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated duration:(NSTimeInterval)duration completion:(void(^)(BOOL finished))completion {
+    [UIView animateWithDuration:duration animations:^{
+        if (highlighted) {
+            self.layer.borderWidth = 1.0;
+            self.layer.borderColor = [UIColor blackColor].CGColor;
+            self.layer.shadowOpacity = 2.0;
+            self.layer.shadowColor = [UIColor yellowColor].CGColor;
+            self.layer.shadowOffset =  CGSizeMake(0, 0);
+            self.layer.shadowRadius = 5.0;
+        }
+        else {
+            self.layer.borderWidth = 0.0;
+            self.layer.borderColor = [UIColor clearColor].CGColor;
+            self.layer.shadowOpacity = 0.0;
+        }
+
+    } completion:completion];
+}
+
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
