@@ -115,4 +115,8 @@
  */
 - (void)resign;
 
+/** Highlight and unhighlight */
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated completion:(void(^)(BOOL finished))completion;
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated duration:(NSTimeInterval)duration completion:(void(^)(BOOL finished))completion;
+
 @end
