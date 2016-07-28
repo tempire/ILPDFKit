@@ -37,6 +37,12 @@
     }
 }
 
+- (NSString *)description {
+    NSString *descriptionString = [NSString stringWithFormat:@"type=%@, name=%@, display name=%@\rframe: x=%f, y=%f, width=%f, height=%f", NSStringFromClass([self class]), _name, _displayName, _baseFrame.origin.x, _baseFrame.origin.y, _baseFrame.size.width, _baseFrame.size.height ];
+    return descriptionString;
+}
+
+
 #pragma mark - UIView
 
 - (instancetype)initWithFrame:(CGRect)frame {

@@ -70,6 +70,14 @@
  */
 @property (nonatomic, weak) PDFView *parentView;
 
+/** The field name from the PDF
+ */
+@property (nonatomic, strong) NSString *name;
+
+/** The user display name from the PDF.  Called ToolTip in Adobe Acrobat
+ */
+@property (nonatomic, strong) NSString *displayName;
+
 /**---------------------------------------------------------------------------------------
  * @name Updating Metrics
  *  ---------------------------------------------------------------------------------------
@@ -106,7 +114,6 @@
 /** Resigns th input focus.
  */
 - (void)resign;
-
 
 /** Highlight and unhighlight */
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated completion:(void(^)(BOOL finished))completion;

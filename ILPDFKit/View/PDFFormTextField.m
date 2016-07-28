@@ -44,7 +44,7 @@
 
 #pragma mark - PDFFormTextField
 
-- (instancetype)initWithFrame:(CGRect)frame multiline:(BOOL)multiline alignment:(NSTextAlignment)alignment secureEntry:(BOOL)secureEntry readOnly:(BOOL)ro {
+- (instancetype)initWithFrame:(CGRect)frame multiline:(BOOL)multiline alignment:(NSTextAlignment)alignment appearance:(NSString *)appearanceInfo secureEntry:(BOOL)secureEntry readOnly:(BOOL)ro {
     self = [super initWithFrame:frame];
     if (self != nil) {
         self.opaque = NO;
@@ -77,9 +77,24 @@
         }
         _textFieldOrTextView.opaque = NO;
         _textFieldOrTextView.backgroundColor = [UIColor clearColor];
-        _baseFontSize = [PDFWidgetAnnotationView fontSizeForRect:frame value:nil multiline:multiline choice:NO];
-        _currentFontSize = _baseFontSize;
-        [_textFieldOrTextView performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:_baseFontSize]];
+        
+        UIFont *displayFont = [PDFForm getFontFromDisplayAttribute:appearanceInfo];
+        
+        // In PDF, a font added with size of 0 means "use the system font".  So if the font comes back nil or the size is 0, we don't use the display font.
+        if(displayFont != nil && displayFont.pointSize > 0.0)
+        {
+            _baseFontSize = displayFont.pointSize;
+            _currentFontSize = _baseFontSize;
+            
+            [_textFieldOrTextView performSelector:@selector(setFont:) withObject:displayFont];
+        }
+        else
+        {
+            _baseFontSize = [PDFWidgetAnnotationView fontSizeForRect:frame value:nil multiline:multiline choice:NO];
+            _currentFontSize = _baseFontSize;
+            
+             [_textFieldOrTextView performSelector:@selector(setFont:) withObject:[UIFont systemFontOfSize:_baseFontSize]];
+        }
         [self addSubview:_textFieldOrTextView];
     }
     return self;
@@ -151,8 +166,6 @@
 }
 
 #pragma mark - UITextFieldDelegate
-
-
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
     if ([newString length] <= [textField.text length]) return YES;
@@ -174,5 +187,4 @@
 - (void)resign {
     [_textFieldOrTextView resignFirstResponder];
 }
-
 @end

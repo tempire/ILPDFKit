@@ -93,6 +93,10 @@
     return _allForms;
 }
 
+- (BOOL)hasForms {
+    return _allForms.count > 0;
+}
+
 #pragma mark - Adding and Removing Forms
 
 - (void)addForm:(PDFForm *)form {

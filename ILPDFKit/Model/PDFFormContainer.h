@@ -122,5 +122,10 @@
  */
 - (NSString *)formXML;
 
+/** Returns BOOL on whether the pdf has any embedded forms.
+ @return BOOL on wheter the pdf has any embedded forms.
+ */
+- (BOOL)hasForms;
+
 
 @end

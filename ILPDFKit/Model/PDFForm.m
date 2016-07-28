@@ -68,6 +68,9 @@
         NSNumber *formTextAlignment = [leaf  inheritableValueForKey:@"Q"];
         _exportValue = [self getExportValueFrom:leaf];
         _setAppearanceStream = [self getSetAppearanceStreamFromLeaf:leaf];
+        
+        _textDisplayAttribute = [self getTextFontValueFrom:leaf];
+        
         PDFArray *arr = [leaf inheritableValueForKey:@"Opt"];
         NSMutableArray *temp = [NSMutableArray array];
         for (id obj in arr) {
@@ -237,8 +240,13 @@
 
 - (void)vectorRenderInPDFContext:(CGContextRef)ctx forRect:(CGRect)rect {
     if (self.formType == PDFFormTypeText || self.formType == PDFFormTypeChoice) {
+        
         NSString *text = self.value;
-        UIFont *font = [UIFont systemFontOfSize:[PDFWidgetAnnotationView fontSizeForRect:rect value:self.value multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0 && self.formType == PDFFormTypeText) choice:self.formType == PDFFormTypeChoice]];
+        UIFont *font = [PDFForm getFontFromDisplayAttribute:_textDisplayAttribute ];
+        if(font == nil){
+            font = [UIFont systemFontOfSize:[PDFWidgetAnnotationView fontSizeForRect:rect value:self.value multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0 && self.formType == PDFFormTypeText) choice:self.formType == PDFFormTypeChoice]];
+        }
+        
         UIGraphicsPushContext(ctx);
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
         paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
@@ -247,10 +255,13 @@
         UIGraphicsPopContext();
     } else if (self.formType == PDFFormTypeButton) {
         [PDFFormButtonField drawWithRect:rect context:ctx back:NO selected:[self.value isEqualToString:self.exportValue] && (_flags & PDFFormFlagButtonPushButton) == 0 radio:(_flags & PDFFormFlagButtonRadio) > 0];
+    } else if (self.formType == PDFFormTypeSignature) {
+        [PDFFormSignatureField drawWithRect:rect context:ctx value:self.value];
     }
 }
 
 - (PDFWidgetAnnotationView *)createWidgetAnnotationViewForSuperviewWithWidth:(CGFloat)viewWidth xMargin:(CGFloat)xmargin yMargin:(CGFloat)ymargin {
+    
     if ((_annotFlags & PDFAnnotationFlagHidden) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagInvisible) > 0) return nil;
     if ((_annotFlags & PDFAnnotationFlagNoView) > 0) return nil;
@@ -304,7 +315,7 @@
     
     switch (_formType) {
         case PDFFormTypeText:
-            _formUIElement = [[PDFFormTextField alloc] initWithFrame:_uiBaseFrame multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0) alignment:_textAlignment secureEntry:((_flags & PDFFormFlagTextFieldPassword) > 0) readOnly:((_flags & PDFFormFlagReadOnly) > 0)];
+            _formUIElement = [[PDFFormTextField alloc] initWithFrame:_uiBaseFrame multiline:((_flags & PDFFormFlagTextFieldMultiline) > 0) alignment:_textAlignment appearance:_textDisplayAttribute secureEntry:((_flags & PDFFormFlagTextFieldPassword) > 0) readOnly:((_flags & PDFFormFlagReadOnly) > 0)];
         break;
         case PDFFormTypeButton: {
             BOOL radio = ((_flags & PDFFormFlagButtonRadio) > 0);
@@ -335,9 +346,11 @@
         _formUIElement.delegate = self;
         [self addObserver:_formUIElement forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:NULL];
         [self addObserver:_formUIElement forKeyPath:@"options" options:NSKeyValueObservingOptionNew context:NULL];
+        
+        _formUIElement.name = self.name;
+        _formUIElement.displayName = self.uname;
     }
       return _formUIElement;
-
 }
 
 
@@ -412,6 +425,20 @@
     return nil;
 }
 
+//Returns the font for a field defined by the DA attribute in the PDF stream
+-(NSString *)getTextFontValueFrom:(PDFDictionary *)leaf {
+    
+    // DA is an NSInlineData object which can be decoded as a UTF8 string
+    id da = leaf[@"DA"];
+
+    if(da != nil)
+    {
+        return [[NSString alloc] initWithData:da encoding:NSUTF8StringEncoding];
+    }
+    
+    return nil;
+}
+
 
 #pragma mark - KVO
 
@@ -422,6 +449,70 @@
         _formUIElement = nil;
     }
 }
+
+
+#pragma mark - Styling
+
+- (void)highlight {
+    _formUIElement.backgroundColor = [UIColor colorWithRed:1.00 green:0.81 blue:0.38 alpha:1.0];
+}
+
+- (void)removeHighlight {
+    _formUIElement.backgroundColor = PDFWidgetColor;
+}
+
+#pragma mark - Private Methods
++ (UIFont *)getFontFromDisplayAttribute:(NSString *)attributeInfo
+{
+    UIFont *returnFont = nil;
+    
+    if(attributeInfo == nil)
+        return nil;
+    
+    NSArray *parts = [attributeInfo componentsSeparatedByString:@" "];
+    if(parts.count > 2)
+    {
+        NSString *fontNameAndFamily = [parts[0] substringFromIndex:1];
+        CGFloat fontSize = [parts[1] floatValue];
+        
+        returnFont = [self getFontForFamily:fontNameAndFamily size:fontSize];
+    }
+    return returnFont; // Could be nil
+}
+
++(UIFont *)getFontForFamily:(NSString *)font size:(CGFloat)size
+{
+    //Note: Currently this only handles either Bold Or Italic.  It also only handles fairly
+    // standard fontFamily styles.  It would need extending to go beyond this.
+    
+    UIFontDescriptor * baseDescriptor = nil;
+    NSString *fontFamily = nil;
+    NSString *fontModifier = nil;
+    
+    NSArray *parts = [font componentsSeparatedByString:@","];
+    if(parts.count == 2) {
+        fontFamily = parts[0];
+        fontModifier = parts[1];
+    }
+    else{
+        fontFamily = font;
+    }
+    baseDescriptor = [UIFontDescriptor fontDescriptorWithName:fontFamily size:size];
+    
+    UIFontDescriptor *boldDescriptor = [baseDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    UIFontDescriptor *italicDescriptor = [baseDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+    
+    NSRange isBold = [fontModifier rangeOfString:@"bold" options:NSCaseInsensitiveSearch];
+    NSRange isItalic = [fontModifier rangeOfString:@"italic" options:NSCaseInsensitiveSearch];
+    
+    if(isBold.location != nil && isBold.location != NSNotFound)
+        return [UIFont fontWithDescriptor:boldDescriptor size:size];
+    else if(isItalic.location != nil && isItalic.location != NSNotFound)
+        return [UIFont fontWithDescriptor:italicDescriptor size:size];
+    else
+        return [UIFont fontWithDescriptor:baseDescriptor size:size];
+}
+
 
 @end
 

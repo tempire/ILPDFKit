@@ -182,6 +182,11 @@ typedef NS_ENUM(NSUInteger, PDFFormType) {
  */
 @property (nonatomic, strong, readonly) NSString *setAppearanceStream;
 
+/** The DA attribute for Annotation fields.  Can be used to customize the text appearance to match
+    the PDF
+ */
+@property (nonatomic, strong, readonly) NSString *textDisplayAttribute;
+
 
 /**
  The field dictionary that defines the form
@@ -243,6 +248,29 @@ typedef NS_ENUM(NSUInteger, PDFFormType) {
  */
 
 - (void)removeObservers;
+
+/**---------------------------------------------------------------------------------------
+ * @name Styling
+ *  ---------------------------------------------------------------------------------------
+ */
+
+/** Highlights the view
+ */
+- (void)highlight;
+
+/** Removes highlight on the view
+ */
+- (void)removeHighlight;
+
+/** Parses the attributeInfo to return a UIFont * with the font information from the PDF.
+ Note: Can return nil if font was not found
+ */
++ (UIFont *)getFontFromDisplayAttribute:(NSString *)attributeInfo;
+
+/** Parses the font family (first part) of the font attribute
+ */
++ (UIFont *)getFontForFamily:(NSString *)font size:(CGFloat)size;
+
 
 @end
 

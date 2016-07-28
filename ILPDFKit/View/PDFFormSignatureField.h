@@ -27,4 +27,6 @@
 /** The PDFFormSignatureField represents a view for a PDF signature field. Not currently implemented.
  */
 @interface PDFFormSignatureField : PDFWidgetAnnotationView
+@property (retain, nonatomic) UIImage *signatureImage;
++(void)drawWithRect:(CGRect)frame context:(CGContextRef)ctx value:(NSString *)value;
 @end
