@@ -1,6 +1,6 @@
 #ILPDFKit
 
-> A simple toolkit for filling out PDF forms, and extracting PDF data in iOS.
+> A simple, minimalist toolkit for filling out PDF forms, and extracting PDF data in iOS, that extends *UIWebView* and the *CoreGraphics PDF C API*.
 
 
 ![screenshot](http://imgur.com/oo5HLUg.png "Screenshot" =250x)
@@ -16,7 +16,7 @@
  
  
 ```objective-c
-PDFDocument *document = [[PDFDocument alloc] initWithResource:@"test.pdf"];
+ILPDFDocument *document = [[ILPDFDocument alloc] initWithResource:@"test.pdf"];
 // Manually set a form value
 [document.forms setValue:@"Derek" forFormWithName:@"Contacts.FirstName"];
 // Save via a static PDF.
@@ -50,23 +50,23 @@ ILPDFKit currently supports a narrow range of PDF versions and is not suitable f
 ### Analyzing PDF Structure 
 
 ```objective-c
-for (PDFDictionary *field in _document.catalog[@"AcroForm"][@"Fields"]) {
+for (ILPDFDictionary *field in self.document.catalog[@"AcroForm"][@"Fields"]) {
       // Inspect field properties here
-  }
+}
 ```
 
 ### Filling Out Forms
 
 ```objective-c
-_pdfViewController = [[PDFViewController alloc] initWithResource:@"test.pdf"];
-[self.window setRootViewController:_pdfViewController];
+self.pdfViewController = [[ILPDFViewController alloc] initWithResource:@"test.pdf"];
+[self.window setRootViewController:self.pdfViewController];
 // Have fun filling out the form.
 ```
 
 ### Getting/Setting Form Values Explicity
 
 ```objective-c
-for (PDFForm *form in _pdfViewController.document.forms){
+for (ILPDFForm *form in self.pdfViewController.document.forms){
 	// Get
 	NSString *formValue = form.value;
 	NSString *formName = form.name; // Fully qualified field name.
@@ -78,14 +78,10 @@ for (PDFForm *form in _pdfViewController.document.forms){
 	
 ### Sending Form XML Data 
 ```objective-c
-NSString *documentFormsXML = [_pdfViewController.document formsXML];
+NSString *documentFormsXML = [self.pdfViewController.document formsXML];
 // Push to webservice
 ```
 	
-## Documentation
-
-[ilpdfkit.com](http://ilpdfkit.com/index.html)
-
 
 ## Contact
 
@@ -97,7 +93,7 @@ NSString *documentFormsXML = [_pdfViewController.document formsXML];
 
 (The MIT License)
 
-Copyright (c) 2013 Derek Blair &lt;derekjblair@gmail.com&gt;
+Copyright (c) 2016 Derek Blair &lt;derekjblair@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
