@@ -49,7 +49,12 @@
     [_pdfView setFrame:self.bounds];
     [_pdfView.scrollView setContentInset:UIEdgeInsetsMake(0, 0, self.bounds.size.height/2, 0)];
 
-    if (!CGRectEqualToRect(self.bounds, CGRectZero) && self.window && !_layoutHasOccured) {
+    if (!CGRectEqualToRect(self.bounds, CGRectZero) && !_layoutHasOccured) {
+
+    // GHNote: self.window does not exist when laying out views in background, which
+    // happens if the app is minimized
+    //if (!CGRectEqualToRect(self.bounds, CGRectZero) && self.window && !_layoutHasOccured) {
+
         _layoutHasOccured = YES;
 
 
